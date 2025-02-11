@@ -1,1 +1,1 @@
-Manual test for auto PR
+This is a manual test
