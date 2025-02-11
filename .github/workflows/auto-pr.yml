@@ -1,16 +1,16 @@
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *' # 毎時実行
   workflow_dispatch:
 jobs:
   auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: チェックアウト
+      - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
-      - name: GitHub CLI 設定
+      - name: GitHub CLI をセットアップ
         run: gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
-      - name: 変更取得
+      - name: 新しい変更を取得
         run: |
           git fetch upstream
           git checkout -b auto-update
@@ -20,6 +20,6 @@ jobs:
           git add .
           git commit -m 'Automated Cursor improvements'
           git push origin auto-update
-      - name: プルリク作成
+      - name: プルリクエストを作成
         run: gh pr create --base main --head auto-update --title 'Automated PR for Cursor' --body '定期的な改善'
 
