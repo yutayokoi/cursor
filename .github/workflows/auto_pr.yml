@@ -1,0 +1,32 @@
+name: Auto PR to Cursor
+
+on:
+  schedule:
+    - cron: '*/60 * * * *'  # 毎日00:00に実行
+  workflow_dispatch:
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリのチェックアウト
+        uses: actions/checkout@v3
+
+      - name: GitHubトークンで認証
+        run: gh auth login --with-token <<< "$GITHUB_TOKEN"
+
+      - name: Cursorの最新コードを取得
+        run: |
+          git fetch upstream
+          git checkout -b auto-update
+          git merge upstream/main
+
+      - name: 変更をプッシュ
+        run: |
+          git add .
+          git commit -m "Automated Cursor improvements"
+          git push origin auto-update
+
+      - name: プルリクエストを作成
+        run: |
+          gh pr create --base main --head auto-update             --title "Automated PR for Cursor"             --body "毎日自動で改善プルリクエストを送信。"
